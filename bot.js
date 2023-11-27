@@ -68,9 +68,20 @@ async function postTweet(tweetContent) {
 
 // Function to run the bot
 async function runBot() {
-  const tweetContent = await generateTweetContent();
-  if (tweetContent) {
+  let tweetContent = await generateTweetContent();
+  let attempts = 0;
+  const maxAttempts = 5; // Maximum attempts to regenerate content
+
+  while (tweetContent.length > 280 && attempts < maxAttempts) {
+    console.log(`Generated content too long (${tweetContent.length} characters). Regenerating...`);
+    tweetContent = await generateTweetContent();
+    attempts++;
+  }
+
+  if (tweetContent.length <= 280) {
     await postTweet(tweetContent);
+  } else {
+    console.log("Failed to generate short enough content after several attempts.");
   }
 }
 
@@ -81,7 +92,7 @@ const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 const EVERY_30_MINUTES = '0,30 * * * *';
 
-cron.schedule(EVERY_MINUTE, () => {
-  console.log('This will run every minute');
+cron.schedule(EVERY_30_SECONDS, () => {
+  console.log('This will run every 30 seconds');
   runBot();
 });
