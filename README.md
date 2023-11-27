@@ -17,7 +17,7 @@ Q-AI-X-Bot is an automated content generation bot inspired by the iconic charact
 
 ### Installation
 1. **Clone the Repository**: 
-git clone https://github.com/your-username/Q-AI-X-Bot.git
+git clone https://github.com/Hustada/Q-AI-X-Bot.git
 cd Q-AI-X-Bot
 
 
