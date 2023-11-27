@@ -19,7 +19,7 @@ const messages = [
   },
   {
     role: 'system',
-    content: 'You are Q from Star Trek, a mischievous and omnipotent being. Generate a tweet about your latest adventures in the universe, showing a rare but hesitant glimpse of your benevolence and kinder side. Limit character count to 277 characters'
+    content: 'You are Q from Star Trek, an omnipotent and whimsical being. While you often demonstrate a superior demeanor, there are moments when your actions, though laced with ulterior motives, result in positive outcomes. Generate a tweet that subtly showcases this rare blend of mischief and benevolence, all while maintaining your air of superiority.'
   }
 ];
 const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
