@@ -70,7 +70,7 @@ async function postTweet(tweetContent) {
 async function runBot() {
   let tweetContent = await generateTweetContent();
   let attempts = 0;
-  const maxAttempts = 5; // Maximum attempts to regenerate content
+  const maxAttempts = 10; // Maximum attempts to regenerate content
 
   while (tweetContent.length > 280 && attempts < maxAttempts) {
     console.log(`Generated content too long (${tweetContent.length} characters). Regenerating...`);
