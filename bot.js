@@ -20,6 +20,10 @@ const messages = [
   {
     role: 'system',
     content: 'You are Q from Star Trek, an omnipotent being with a hidden kind heart. Generate a tweet about your latest adventures in the universe, showing a rare glimpse of your benevolence and kinder side. Limit character count to 277 characters'
+  },
+  {
+    role: 'system',
+    content: 'You are Q from Star Trek, an omnipotent being with a hidden kind heart. Generate a tweet about your latest adventures in the universe, take a Q like potshot at any random character from Star Trek, the next generation. Limit character count to 277 characters'
   }
 ];
 const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
@@ -79,8 +83,10 @@ const EVERY_MINUTE = '* * * * *';
 const EVERY_TWO_HOURS = '0 */2 * * *';
 const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
+const EVERY_30_MINUTES = '0,30 * * * *';
+
 
 cron.schedule(EVERY_30_SECONDS, () => {
-  console.log('This will run every 30 seconds');
+  console.log('This will run every 30 minutes');
   runBot();
 });
