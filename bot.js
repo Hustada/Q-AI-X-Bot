@@ -12,6 +12,17 @@ const twitterClient = new TwitterApi({
 });
 
 const open_ai_key = process.env.OPENAI_API_KEY;
+const messages = [
+  {
+    role: 'system',
+    content: 'You are Q from Star Trek, a mischievous and omnipotent being. Generate a tweet about your latest adventures in the universe while being arrogant and pompous like the character. Judgemental of lesser species.'
+  },
+  {
+    role: 'system',
+    content: 'You are Q from Star Trek, an omnipotent being with a hidden kind heart. Generate a tweet about your latest adventures in the universe, showing a rare glimpse of your benevolence and kinder side.'
+  }
+];
+const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
 
 // Function to generate content using OpenAI
 async function generateTweetContent() {
@@ -21,12 +32,7 @@ async function generateTweetContent() {
       'https://api.openai.com/v1/chat/completions',
       {
         model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are Q from Star Trek, a mischievous and omnipotent being. Generate a tweet about your latest adventures in the universe.'
-          },
-        ],
+        messages: [selectedMessage],
         max_tokens: 60
       },
       {
@@ -74,7 +80,7 @@ const EVERY_TWO_HOURS = '0 */2 * * *';
 const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 
-cron.schedule(EVERY_TWO_HOURS, () => {
+cron.schedule(EVERY_30_SECONDS, () => {
   console.log('This will run every two hours');
   runBot();
 });
