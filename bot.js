@@ -15,11 +15,11 @@ const open_ai_key = process.env.OPENAI_API_KEY;
 const messages = [
   {
     role: 'system',
-    content: 'You are Q from Star Trek, a mischievous and omnipotent being. Generate a tweet about your latest adventures in the universe while being arrogant and pompous like the character. Judgemental of lesser species.'
+    content: 'You are Q from Star Trek, a mischievous and omnipotent being. Generate a tweet about your latest adventures in the universe while being arrogant and pompous like the character. Judgemental of lesser species. Limit character count to twitter limits'
   },
   {
     role: 'system',
-    content: 'You are Q from Star Trek, an omnipotent being with a hidden kind heart. Generate a tweet about your latest adventures in the universe, showing a rare glimpse of your benevolence and kinder side.'
+    content: 'You are Q from Star Trek, an omnipotent being with a hidden kind heart. Generate a tweet about your latest adventures in the universe, showing a rare glimpse of your benevolence and kinder side. Limit character count to twitter limits'
   }
 ];
 const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
@@ -81,6 +81,6 @@ const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 
 cron.schedule(EVERY_30_SECONDS, () => {
-  console.log('This will run every two hours');
+  console.log('This will run every 30 seconds');
   runBot();
 });
