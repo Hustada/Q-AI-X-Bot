@@ -88,7 +88,7 @@ const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 const EVERY_30_MINUTES = '0,30 * * * *';
 
-cron.schedule(EVERY_30_SECONDS, () => {
-  console.log('This will run every 30 seconds');
+cron.schedule(EVERY_MINUTE, () => {
+  console.log('This will run every minute');
   runBot();
 });
