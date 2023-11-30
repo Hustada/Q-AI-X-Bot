@@ -13,17 +13,17 @@ const twitterClient = new TwitterApi({
 });
 
 const open_ai_key = process.env.OPENAI_API_KEY;
+
 // Function to randomly select a prompt
 function getRandomPrompt() {
   return prompts[Math.floor(Math.random() * prompts.length)];
 }
-const selectedMessage = getRandomPrompt();
-console.log(selectedMessage);
 
 // Function to generate content using OpenAI
 async function generateTweetContent() {
+  const selectedMessage = getRandomPrompt();
+
   try {
-    console.log("Generating tweet content...");
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -34,13 +34,18 @@ async function generateTweetContent() {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+          'Authorization': `Bearer ${open_ai_key}`
         },
       }
     );
 
-    const tweetContent = response.data.choices[0].message.content;
-    console.log("Generated content: ", tweetContent);
+    let tweetContent = response.data.choices[0].message.content;
+
+    // Truncate to the last complete sentence if over character limit
+    if (tweetContent.length > 280) {
+      tweetContent = truncateToLastCompleteSentence(tweetContent);
+    }
+
     return tweetContent;
 
   } catch (error) {
@@ -49,35 +54,40 @@ async function generateTweetContent() {
   }
 }
 
+// Function to truncate content to the last complete sentence
+function truncateToLastCompleteSentence(text) {
+  const sentenceEndRegex = /[.!?]\s/;
+  const sentences = text.split(sentenceEndRegex);
+  
+  if (!sentenceEndRegex.test(text.slice(-2))) {
+    sentences.pop();
+  }
+  
+  return sentences.join('. ') + (sentences.length > 0 ? '.' : '');
+}
+
 // Function to post a tweet
 async function postTweet(tweetContent) {
   try {
-    console.log("Posting tweet: ", tweetContent);
-    const response = await twitterClient.v2.tweet({
-      text: tweetContent
-    });
-    console.log('Tweet successfully posted:', response);
+    await twitterClient.v2.tweet({ text: tweetContent });
+    console.log('Tweet successfully posted');
   } catch (error) {
-    console.error('Error posting tweet:', error);
+    if (error.code === 429) {
+      console.error('Rate limit exceeded. Waiting to retry...');
+      setTimeout(() => postTweet(tweetContent), 15 * 60 * 1000);
+    } else {
+      console.error('Error posting tweet:', error);
+    }
   }
 }
 
 // Function to run the bot
 async function runBot() {
-  let tweetContent = await generateTweetContent();
-  let attempts = 0;
-  const maxAttempts = 10; // Maximum attempts to regenerate content
-
-  while (tweetContent.length > 280 && attempts < maxAttempts) {
-    console.log(`Generated content too long (${tweetContent.length} characters). Regenerating...`);
-    tweetContent = await generateTweetContent();
-    attempts++;
-  }
-
-  if (tweetContent.length <= 280) {
+  const tweetContent = await generateTweetContent();
+  if (tweetContent && tweetContent.length <= 280) {
     await postTweet(tweetContent);
   } else {
-    console.log("Failed to generate short enough content after several attempts.");
+    console.log('Generated content is too long. Skipping...');
   }
 }
 
@@ -88,7 +98,5 @@ const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 const EVERY_30_MINUTES = '0,30 * * * *';
 
-cron.schedule(EVERY_MINUTE, () => {
-  console.log('This will run every minute');
-  runBot();
-});
+
+cron.schedule(EVERY_30_MINUTES, runBot);
