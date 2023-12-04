@@ -99,4 +99,4 @@ const EVERY_MONDAY_NOON = '0 12 * * 1';
 const EVERY_30_MINUTES = '0,30 * * * *';
 
 
-cron.schedule(EVERY_30_MINUTES, runBot);
+cron.schedule(EVERY_30_SECONDS, runBot);
