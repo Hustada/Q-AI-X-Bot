@@ -3,16 +3,12 @@ import { Container, Table, TableBody, TableCell, TableContainer, TableHead, Tabl
 
 const LogViewer = () => {
   const [logs, setLogs] = useState([]);
-  const dummyLogs = [
-    { id: 1, timestamp: '2024-01-01 12:00:00', message: 'First log entry', level: 'info' },
-    { id: 2, timestamp: '2024-01-01 12:05:00', message: 'Second log entry', level: 'error' },
-    // Add more dummy logs as needed
-  ];
 
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch('/logs');
+        // Make sure to use the full URL if you're not using a proxy in development
+        const response = await fetch('http://localhost:5000/logs');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -33,7 +29,7 @@ const LogViewer = () => {
       </Typography>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
-          <TableHead>``
+          <TableHead>
             <TableRow>
               <TableCell>Time</TableCell>
               <TableCell>Message</TableCell>
@@ -41,8 +37,8 @@ const LogViewer = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dummyLogs.map((log) => (
-              <TableRow key={log.id}>
+            {logs.map((log, index) => (
+              <TableRow key={index}>
                 <TableCell>{log.timestamp}</TableCell>
                 <TableCell>{log.message}</TableCell>
                 <TableCell>{log.level}</TableCell>
@@ -56,4 +52,3 @@ const LogViewer = () => {
 };
 
 export default LogViewer;
-
