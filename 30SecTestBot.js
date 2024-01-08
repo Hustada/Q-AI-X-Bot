@@ -28,6 +28,7 @@ async function generateTweetContent() {
       'https://api.openai.com/v1/chat/completions',
       {
         model: 'gpt-4',
+        // response_format: 'json_object',
         messages: [selectedMessage],
         max_tokens: 60
       },
