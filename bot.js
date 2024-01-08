@@ -3,6 +3,27 @@ const axios = require('axios');
 const { TwitterApi } = require('twitter-api-v2');
 const cron = require('node-cron');
 const prompts = require('./prompts');
+const fs = require('fs');
+const path = require('path');
+const winston = require('winston');
+
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
+// Winston logger configuration
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: path.join(logsDir, 'bot.log') })
+  ]
+});
 
 // Twitter client setup
 const twitterClient = new TwitterApi({
@@ -49,7 +70,7 @@ async function generateTweetContent() {
     return tweetContent;
 
   } catch (error) {
-    console.error('Error generating content:', error);
+    logger.error('Error generating content: ' + error.message);
     return null;
   }
 }
@@ -70,13 +91,14 @@ function truncateToLastCompleteSentence(text) {
 async function postTweet(tweetContent) {
   try {
     await twitterClient.v2.tweet({ text: tweetContent });
-    console.log('Tweet successfully posted');
+    console.log('Tweet Successfully posted!');
+    logger.info('Tweet successfully posted');
   } catch (error) {
     if (error.code === 429) {
-      console.error('Rate limit exceeded. Waiting to retry...');
+      logger.error('Rate limit exceeded. Waiting to retry...');
       setTimeout(() => postTweet(tweetContent), 15 * 60 * 1000);
     } else {
-      console.error('Error posting tweet:', error);
+      logger.error('Error posting tweet: ' + error.message);
     }
   }
 }
@@ -87,16 +109,24 @@ async function runBot() {
   if (tweetContent && tweetContent.length <= 280) {
     await postTweet(tweetContent);
   } else {
-    console.log('Generated content is too long. Skipping...');
+    logger.info('Generated content is too long. Skipping...');
   }
 }
 
+// Scheduling the bot to run at specified intervals
 const EVERY_30_SECONDS = '*/30 * * * * *';
 const EVERY_MINUTE = '* * * * *';
 const EVERY_TWO_HOURS = '0 */2 * * *';
 const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
-const EVERY_30_MINUTES = '0,30 * * * *';
+const EVERY_30_MINUTES = '*/30 * * * *';
+cron.schedule(EVERY_30_SECONDS, runBot);
+
+// Start the bot
+runBot().catch(e => logger.error(e.message));
+
+// Export the logger if you want to use it in other files
+module.exports.logger = logger;
 
 
-cron.schedule(EVERY_30_MINUTES, runBot);
+
