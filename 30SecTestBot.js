@@ -27,7 +27,7 @@ async function generateTweetContent() {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-4',
+        model: 'gpt-4o',
         // response_format: 'json_object',
         messages: [selectedMessage],
         max_tokens: 60
