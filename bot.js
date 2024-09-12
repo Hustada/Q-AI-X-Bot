@@ -120,7 +120,7 @@ const EVERY_TWO_HOURS = '0 */2 * * *';
 const EVERY_DAY_MIDNIGHT = '0 0 * * *';
 const EVERY_MONDAY_NOON = '0 12 * * 1';
 const EVERY_30_MINUTES = '*/30 * * * *';
-cron.schedule(EVERY_30_SECONDS, runBot);
+cron.schedule(EVERY_TWO_HOURS, runBot);
 
 // Start the bot
 runBot().catch(e => logger.error(e.message));
